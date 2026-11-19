@@ -24,7 +24,7 @@ for i in range(200):
     if loan > max_loan:
         max_loan = loan
         max_title = data[1]
-    if loan < min_loan:
+    if loan <= min_loan:
         min_loan = loan
         min_title = data[1]
 
