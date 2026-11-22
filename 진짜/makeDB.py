@@ -17,6 +17,7 @@ data_list = []
 
 for file in files:
     data = pd.read_csv(file,skiprows=12)
+    data['data_month'] = file.split('_')[-1].replace('.csv', '')
     data_list.append(data)
 
 data = pd.concat(data_list, ignore_index=True)
@@ -50,7 +51,8 @@ data.rename(columns={
     'ISBN': 'isbn',
     'ISBN부가기호': 'isbn_add_code',
     'KDC': 'kdc',
-    '대출건수': 'loan_count'
+    '대출건수': 'loan_count',
+    'data_month' : 'data_month'
 }, inplace=True)
 
 print(data.columns)
@@ -58,9 +60,9 @@ rows = list(data.itertuples(index=False, name = None))
 sql = """
 INSERT INTO loan_ranking (
     ranking, title, author, publisher, publish_year,
-    volume, isbn, isbn_add_code, kdc, loan_count
+    volume, isbn, isbn_add_code, kdc, loan_count, data_month
 )
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 from connDB import conn
 data = data.astype(object).where(pd.notna(data), None)
@@ -78,3 +80,7 @@ print('입력 행 수:', cursor.rowcount)
 
 cursor.close()
 conn.close()
+
+print(data.columns.tolist())
+print(len(data.columns))
+print(len(rows[0]))
